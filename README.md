@@ -28,14 +28,15 @@ Date: November 2025
   - Ozone (O3) – Daily Max 8-hour concentration  
 
 ## Repository Contents
-Xue_Yiyang_Project2/
-├── Project2.Rmd         # Main R Markdown analysis file
-├── Project2.docx        # Final report
-├── AQ_2018.csv          # 2018 air quality data
-├── AQ_2019.csv          # 2019 air quality data
-├── AQ_2020.csv          # 2020 air quality data
-└── README.md            # This file
-
+```
+├── Xue_Yiyang_Project2.Rproj         # RStudio project file
+├── Xue_Yiyang_Project2.Rmd                      # Main R Markdown analysis
+├── Xue_Yiyang_Project2.docx                     # Final knitted report
+├── AQ_2018.csv                       # 2018 air quality data
+├── AQ_2019.csv                       # 2019 air quality data
+├── AQ_2020.csv                       # 2020 air quality data
+└── README.md                         # Project documentation
+```
 
 ## Plots Included
 - Figure 1: Monthly CO & Ozone concentrations with 95% CI  
