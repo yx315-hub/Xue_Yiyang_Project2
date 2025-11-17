@@ -1,0 +1,126 @@
+---
+title: "Project 2"
+author: "Yiyang Xue"
+date: "`r Sys.Date()`"
+output:
+  word_document:
+    toc: true
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+library(readr)
+library(dplyr)
+library(tidyverse)
+library(lubridate)
+```
+
+```{r}
+air18_raw <- read_csv("AQ_2018.csv")
+air19_raw <- read_csv("AQ_2019.csv")
+air20_raw <- read_csv("AQ_2020.csv")
+```
+
+```{r}
+process_air <- function(df) {
+  df_clean <- df %>%
+    transmute(
+      Date = lubridate::mdy(Date),
+      CO = `Daily Max 8-hour CO Concentration`,
+      PM2.5 = `Daily Mean PM2.5 Concentration`,
+      O3 = `Daily Max 8-hour Ozone Concentration`
+    )
+  
+  pollutant_names <- c("CO", "PM2.5", "O3")
+  for (var in pollutant_names) {
+    df_clean[[var]][df_clean[[var]] < 0] <- 0
+  }
+  
+  df_clean <- df_clean %>% distinct()
+  
+  df_clean <- df_clean %>%
+    group_by(Date) %>%
+    summarise(
+      CO = mean(CO, na.rm = TRUE),
+      PM2.5 = mean(PM2.5, na.rm = TRUE),
+      O3 = mean(O3, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  return(df_clean)
+}
+
+air18 <- process_air(air18_raw) %>% mutate(Year = 2018)
+air19 <- process_air(air19_raw) %>% mutate(Year = 2019)
+air20 <- process_air(air20_raw) %>% mutate(Year = 2020)
+
+air_all <- bind_rows(air18, air19, air20) %>%
+  mutate(
+  Month = lubridate::month(Date, label = TRUE, abbr = TRUE)  
+  )
+```
+
+## Plots
+### Figure 1. Monthly Mean CO and Ozone (O3) Concentrations with 95% Confidence Intervals, 2018–2020
+
+```{r}
+air_long_CO_O3 <- air_all %>%
+  select(Month, CO, O3) %>%
+  pivot_longer(
+  cols = c(CO, O3),
+  names_to = "Pollutant",
+  values_to = "Value"
+)
+
+monthly_CO_O3 <- air_long_CO_O3 %>%
+ group_by(Month, Pollutant) %>%
+ summarise(
+  mean_val = mean(Value, na.rm = TRUE),
+  sd_val   = sd(Value, na.rm = TRUE),
+  n        = sum(!is.na(Value)),
+  se       = sd_val / sqrt(n),
+  lcl      = mean_val - 1.96 * se,
+  ucl      = mean_val + 1.96 * se,
+  .groups  = "drop"
+)
+
+ggplot2::ggplot(monthly_CO_O3,
+       ggplot2::aes(x = Month, y = mean_val,
+                    color = Pollutant, group = Pollutant)) +
+  ggplot2::geom_point(size = 2) +
+  ggplot2::geom_line() +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = lcl, ymax = ucl),
+                         width = 0.1) +
+  ggplot2::labs(
+    title = "Monthly Mean CO and O3 Concentrations (2018–2020)",
+    x = "Month",
+    y = "Mean concentration",
+    color = "Pollutant"
+  ) +
+  ggplot2::theme_minimal()
+```
+
+### Monthly Mean PM2.5 Concentrations by Year (2018–2020)
+
+```{r}
+monthly_PM2.5 <- air_all %>%
+  group_by(Year, Month) %>%
+  summarise(mean_PM2.5 = mean(PM2.5, na.rm = TRUE),
+            .groups = "drop")
+
+ggplot(monthly_PM2.5,
+       aes(x = Month, y = mean_PM2.5,
+           color = factor(Year), group = Year)) +
+  geom_line() +
+  geom_point(size = 2) +
+  labs(
+    title = "Monthly Mean PM2.5 Concentrations by Year",
+    x = "Month",
+    y = "Mean PM2.5 concentration",
+    color = "Year"
+  ) +
+  theme_minimal()
+```
