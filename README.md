@@ -15,8 +15,10 @@ processed datasets are used to create monthly average pollutant summaries and ge
 seasonal trends, compare pollutant patterns across years, and provide interpretable summaries of air quality variation over time. The workflow 
 demonstrates reproducible programming practices, clear data organization, and effective use of R Markdown for environmental data analysis.
 
-Author: Yiyang Xue  
+Author: Yiyang Xue
+
 Course: BIOSTAT 721 
+
 Date: November 2025  
 
 ## Data Sources
@@ -30,8 +32,8 @@ Date: November 2025
 ## Repository Contents
 ```
 ├── Xue_Yiyang_Project2.Rproj         # RStudio project file
-├── Xue_Yiyang_Project2.Rmd                      # Main R Markdown analysis
-├── Xue_Yiyang_Project2.docx                     # Final knitted report
+├── Xue_Yiyang_Project2.Rmd           # Main R Markdown analysis
+├── Xue_Yiyang_Project2.docx          # Final knitted report
 ├── AQ_2018.csv                       # 2018 air quality data
 ├── AQ_2019.csv                       # 2019 air quality data
 ├── AQ_2020.csv                       # 2020 air quality data
